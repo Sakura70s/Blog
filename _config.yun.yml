@@ -10,6 +10,14 @@ avatar:
     emoji: 😫
     message: 不想上班
 
+# 背景
+bg_image:
+  enable: true
+  url: https://static.7os.top/Image/Blog/BackImg/1574784866873.png
+  dark: https://static.7os.top/Image/Blog/BackImg/55.png
+  # blur: 30px 
+  opacity: 0.2
+
 # 标语动画
 banner:
   enable: true
@@ -21,3 +29,23 @@ banner:
   go_down:
     enable: true
     icon: ri:arrow-down-s-line
+
+# 公告
+# notice:
+#   enable: true
+#   content: Thanks for playing my game.
+
+# 社交图标
+social:
+  - name: Github
+    link: https://github.com/Sakura70s
+    icon: ri:github-line
+    color: '#181717'
+  - name: E-Mail
+    link: mailto:Sakura70s@outlook.com
+    icon: ri:mail-line
+    color: '#8E71C1'
+  - name: Bilibili
+    link: https://space.bilibili.com/54346474
+    icon: ri:bilibili-line
+    color: '#FF8EB3'
