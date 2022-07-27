@@ -21,6 +21,10 @@ bg_image:
   # blur: 30px 
   opacity: 0.2
 
+# 代码块复制按钮
+codeblock:
+  copy_btn: true
+
 # 标语动画
 banner:
   enable: true
