@@ -1,3 +1,6 @@
+# 站点Icon
+favicon: /favicon.ico
+
 # 头像
 avatar:
   enable: true
