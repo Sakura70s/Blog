@@ -1,6 +1,10 @@
 # 站点Icon
 favicon: /favicon.ico
 
+# 老婆名单
+girls:
+  enable: true
+
 # 头像
 avatar:
   enable: true
@@ -56,3 +60,14 @@ social:
     link: https://space.bilibili.com/54346474
     icon: ri:bilibili-line
     color: '#FF8EB3'
+
+# 侧边栏展示分类
+pages:
+  - name: 我的左边翅膀
+    url: /links/
+    icon: ri:genderless-line
+    color: dodgerblue
+  - name: 我的右边翅膀
+    url: /girls/
+    icon: ri:women-line
+    color: hotpink
