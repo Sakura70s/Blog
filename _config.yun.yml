@@ -17,9 +17,9 @@ avatar:
 bg_image:
   enable: true
   url: https://static.7os.top/Image/Blog/BackImg/1574784866873.png
-  dark: https://static.7os.top/Image/Blog/BackImg/55.png
+  dark: https://static.7os.top/Image/Blog/BackImg/wallhaven-1k6ljv.jpg
   # blur: 30px 
-  opacity: 0.2
+  opacity: 0.6
 
 # 代码块复制按钮
 codeblock:
