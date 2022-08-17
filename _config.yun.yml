@@ -71,3 +71,11 @@ pages:
     url: /girls/
     icon: ri:women-line
     color: hotpink
+
+# 页脚
+footer:
+  live_time:
+    enable: true
+    prefix: 本博客已萌萌哒地运行
+    suffix: ヾ(≧▽≦*)o
+    start_time: '2022-07-26T00:00:00'
