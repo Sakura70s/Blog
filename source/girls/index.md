@@ -11,7 +11,7 @@ girls:
     reason: 我大老婆
   - name: 刻晴
     avatar: https://static.7os.top/Image/Blog/AvaterOfGirls/刻晴.jpg
-    from: CLANNAD
+    from: 原神
     url: https://zh.moegirl.org.cn/%E5%88%BB%E6%99%B4
     reason: 还是我老婆
   - name: 古河渚
