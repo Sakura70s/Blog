@@ -151,7 +151,7 @@ systemctl enable trojan-go
 # 查看运行状态
 systemctl status trojan-go
 # 重启
-systemctl restart trojan-gp
+systemctl restart trojan-go
 ```
 
 ## 预防内存溢出，可以考虑设置每日定时重启
