@@ -1,6 +1,7 @@
 ---
 title: Aria2 in Debian
 date: 2022-09-04 12:43:47
+updated: 2022-09-09 21:40:00
 categories:
   - Server
 tags:

@@ -1,6 +1,7 @@
 ---
 title: Samba in Debian
 date: 2022-09-03 17:39:00
+updated: 2022-09-09 21:40:00
 categories: 
   - Server
 tags:

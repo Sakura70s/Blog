@@ -1,6 +1,7 @@
 ---
 title: Trojan-go Server
 date: 2022-09-04 20:16:46
+updated: 2022-09-07 21:40:00
 categories:
   - Server
 tags:
