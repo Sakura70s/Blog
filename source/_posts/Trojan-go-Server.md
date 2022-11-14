@@ -1,7 +1,8 @@
 ---
+hide: index
 title: Trojan-go Server
 date: 2022-09-04 20:16:46
-updated: 2022-09-07 21:40:00
+updated: 2022-11-14 21:33:00
 categories:
   - Server
 tags:
@@ -12,6 +13,15 @@ tags:
   - GFW
   - Nginx
 ---
+
+<div class="danger">
+
+> 本工具目前已经弃用
+> 目前 GFW 已经可以精准识别 Trojan-go 的 TLS over TLS 的流量
+> 并针对其进行封禁
+> 推荐爬墙协议更换为 `NaïveProxy` 和 `hysteria`
+
+</div>
 
 <div class="warning">
 
