@@ -20,8 +20,8 @@ avatar:
 # 背景
 bg_image:
   enable: true
-  url: https://static.7oss.top/Image/Blog/BackImg/2233.jpg
-  dark: https://static.7oss.top/Image/Blog/BackImg/wallhaven-1k6ljv.jpg
+  url: https://static.7oss.top/Image/Background/2233.jpg
+  dark: https://static.7oss.top/Image/Background/wallhaven-1k6ljv.jpg
   # blur: 30px 
   # opacity: 0.6
 
