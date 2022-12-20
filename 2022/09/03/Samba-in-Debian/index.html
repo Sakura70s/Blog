@@ -1,0 +1,116 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Sakura70s"><meta name="copyright" content="Sakura70s"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>Samba in Debian | Sakura70s の Blog's</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"blog.7oss.top","root":"/","title":"偷得浮生半日闲","version":"1.10.9","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"fireworks":{"colors":null},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><meta name="description" content="Samba 实现了 Windows 网络共享，在低功耗 Linux 设备启动 Samba 可把该设备当成一个 Nas 来使用，当然，成品 Nas 肯定是自带 Samba 服务的，无需手动配置。本文介绍 Samba软件的简单配置。 下载 Samba一条命令下载即可，Debian 系使用 apt 命令，Rh 系使用 yum 命令 sudo apt update &amp;&amp; sudo apt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Samba in Debian">
+<meta property="og:url" content="https://blog.7oss.top/2022/09/03/Samba-in-Debian/index.html">
+<meta property="og:site_name" content="Sakura70s の Blog&#39;s">
+<meta property="og:description" content="Samba 实现了 Windows 网络共享，在低功耗 Linux 设备启动 Samba 可把该设备当成一个 Nas 来使用，当然，成品 Nas 肯定是自带 Samba 服务的，无需手动配置。本文介绍 Samba软件的简单配置。 下载 Samba一条命令下载即可，Debian 系使用 apt 命令，Rh 系使用 yum 命令 sudo apt update &amp;&amp; sudo apt">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/10/08/a8HiPxr2QbylLCA.png">
+<meta property="og:image" content="https://i.loli.net/2021/10/08/eAgOYhsDFjqT3W8.png">
+<meta property="article:published_time" content="2022-09-03T09:39:00.000Z">
+<meta property="article:modified_time" content="2022-09-09T13:40:00.000Z">
+<meta property="article:author" content="Sakura70s">
+<meta property="article:tag" content="Debian">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Nas">
+<meta property="article:tag" content="Samba">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/10/08/a8HiPxr2QbylLCA.png"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Sakura70s"><img width="96" loading="lazy" src="/images/avatar.jpg" alt="Sakura70s"></a><div class="site-author-name"><a href="/about/">Sakura70s</a></div><span class="site-name">Sakura70s の Blog's</span><sub class="site-subtitle"></sub><div class="site-description"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">6</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">17</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Sakura70s" title="Github" target="_blank" style="color:#181717"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:Sakura70s@outlook.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/54346474" title="Bilibili" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的左边翅膀" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/girls/" title="我的右边翅膀" style="color:hotpink"><span class="icon iconify" data-icon="ri:women-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD-Samba"><span class="toc-number">1.</span> <span class="toc-text">下载 Samba</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">编辑配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%BE%91-Samba-%E7%94%A8%E6%88%B7"><span class="toc-number">3.</span> <span class="toc-text">编辑 Samba 用户</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%9C%89%E8%AF%A5%E7%94%A8%E6%88%B7%EF%BC%8C%E8%AF%A5%E7%94%A8%E6%88%B7%E5%8F%AF%E6%AD%A3%E5%B8%B8%E7%99%BB%E5%BD%95"><span class="toc-number">3.1.</span> <span class="toc-text">系统中有该用户，该用户可正常登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E4%B8%AD%E6%97%A0%E8%AF%A5%E7%94%A8%E6%88%B7"><span class="toc-number">3.2.</span> <span class="toc-text">系统中无该用户</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8Samba"><span class="toc-number">4.</span> <span class="toc-text">启动Samba</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Windows-%E4%B8%8B%E8%BF%9E%E6%8E%A5-Samba-%E6%9C%8D%E5%8A%A1"><span class="toc-number">5.</span> <span class="toc-text">Windows 下连接 Samba 服务</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://blog.7oss.top/2022/09/03/Samba-in-Debian/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Sakura70s"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Sakura70s の Blog's"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Samba in Debian</h1><div class="post-meta"><div class="post-time"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-09-03 17:39:00" itemprop="dateCreated datePublished" datetime="2022-09-03T17:39:00+08:00">2022-09-03</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2022-09-09 21:40:00" itemprop="dateModified" datetime="2022-09-09T21:40:00+08:00">2022-09-09</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Server/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Server</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Debian/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Debian</span></a><a class="tag-item" href="/tags/Linux/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Linux</span></a><a class="tag-item" href="/tags/Nas/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Nas</span></a><a class="tag-item" href="/tags/Samba/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Samba</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><p>Samba 实现了 Windows 网络共享，在低功耗 Linux 设备启动 Samba 可把该设备当成一个 Nas 来使用，当然，成品 Nas 肯定是自带 Samba 服务的，无需手动配置。本文介绍 Samba软件的简单配置。</p>
+<h2 id="下载-Samba"><a href="#下载-Samba" class="headerlink" title="下载 Samba"></a>下载 Samba</h2><p>一条命令下载即可，Debian 系使用 apt 命令，Rh 系使用 yum 命令</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> update <span class="token operator">&amp;&amp;</span> <span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> samba<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>下载过程中可能会提示配置一个 DHCP 的问题，建议将设备配置为静态 IP，然后将该选项设置为否</p>
+<h2 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h2><p>Samba 的配置文件位于 &#x2F;etc&#x2F;samba&#x2F;smb.conf，我们编辑他</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">vim</span> /etc/samba/smb.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>我们可以看见文件大概分为两个部分—— Global Settings 和 Share Definitions。</p>
+<p>这里不动Global Settings，我们将Share Definitions下的内容尽数删除，接下来我们要编辑自己的配置</p>
+<p>将我提供的配置模板按自己的情况修改之后粘贴进配置文件，保存退出</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 中括号里是网络地址后接的URL。Win下如此访问：\\IP地址\MyNas</span>
+<span class="token punctuation">[</span>MyNAS<span class="token punctuation">]</span>
+   <span class="token comment"># 共享名称</span>
+   comment <span class="token operator">=</span> Nas
+   <span class="token comment"># 可见性</span>
+   browseable <span class="token operator">=</span> <span class="token function">yes</span>
+   <span class="token comment"># 共享文件夹，修改为自己的文件夹</span>
+   path <span class="token operator">=</span> /home/
+   <span class="token comment"># 新建文件权限，不懂别动</span>
+   create mask <span class="token operator">=</span> 0744
+   <span class="token comment"># 新建文件夹权限，不懂别动</span>
+   directory mask <span class="token operator">=</span> 0744
+   <span class="token comment"># 有效用户</span>
+   valid <span class="token function">users</span> <span class="token operator">=</span> xxxxxxx
+   <span class="token comment"># 所属用户</span>
+   force user <span class="token operator">=</span> xxxxxxx
+   <span class="token comment"># 所属组</span>
+   force group <span class="token operator">=</span> xxxxxxx
+   <span class="token comment"># 匿名登录</span>
+   public <span class="token operator">=</span> no
+   <span class="token comment"># 可读</span>
+   available <span class="token operator">=</span> <span class="token function">yes</span>
+   <span class="token comment"># 可写</span>
+   writable <span class="token operator">=</span> <span class="token function">yes</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>修改完成后保存退出，之后测试配置文件是否正常</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> testparm<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>显示 Loaded services file OK. 字样即使测试正常，可进行下一步</p>
+<h2 id="编辑-Samba-用户"><a href="#编辑-Samba-用户" class="headerlink" title="编辑 Samba 用户"></a>编辑 Samba 用户</h2><h3 id="系统中有该用户，该用户可正常登录"><a href="#系统中有该用户，该用户可正常登录" class="headerlink" title="系统中有该用户，该用户可正常登录"></a>系统中有该用户，该用户可正常登录</h3><p>此时正常使用命令将该用户添加为 Samba 用户即可</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## 将 useras 更改为自己配置文件里写的用户</span>
+<span class="token function">sudo</span> smbpasswd <span class="token parameter variable">-a</span> <span class="token function">users</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="系统中无该用户"><a href="#系统中无该用户" class="headerlink" title="系统中无该用户"></a>系统中无该用户</h3><p>无该用户时先使用 Linux 自带的用户管理添加该用户，之后回到 3.1 继续即可</p>
+<h2 id="启动Samba"><a href="#启动Samba" class="headerlink" title="启动Samba"></a>启动Samba</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## 启动 Samba 命令</span>
+<span class="token function">sudo</span> /etc/init.d/smbd start
+<span class="token comment">## 停止 Samba 命令</span>
+<span class="token function">sudo</span> /etc/init.d/smbd stop
+<span class="token comment">## 重启 Samba 命令</span>
+<span class="token function">sudo</span> /etc/init.d/smbd restart<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="Windows-下连接-Samba-服务"><a href="#Windows-下连接-Samba-服务" class="headerlink" title="Windows 下连接 Samba 服务"></a>Windows 下连接 Samba 服务</h2><p>双击计算机，点击三个点，选择映射网络驱动器</p>
+<p><img src="https://i.loli.net/2021/10/08/a8HiPxr2QbylLCA.png" alt="image-20211008195522011" loading="lazy"></p>
+<p>输入地址，填写账号密码即可映射为本地磁盘，速度跟内网质量有关</p>
+<p><img src="https://i.loli.net/2021/10/08/eAgOYhsDFjqT3W8.png" alt="image-20211008195723372" loading="lazy"></p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Sakura70s</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://blog.7oss.top/2022/09/03/Samba-in-Debian/" title="Samba in Debian">https://blog.7oss.top/2022/09/03/Samba-in-Debian/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2022/09/04/Aria2-in-Debian/" rel="prev" title="Aria2 in Debian"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">Aria2 in Debian</span></a></div><div class="post-nav-item"></div></div></div><div class="hty-card" id="comment"></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2022 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Sakura70s</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.9</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">ヾ(≧▽≦*)o</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2022-07-26T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div class="footer-custom-text">Special Thanks: <a href="https://github.com/" rel="noopener" target="_blank">Github</a> & <a href="https://www.cloudflare.com/" rel="noopener" target="_blank">CloudFlare</a></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a></body></html>

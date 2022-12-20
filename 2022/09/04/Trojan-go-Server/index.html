@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="Sakura70s"><meta name="copyright" content="Sakura70s"><meta name="generator" content="Hexo 6.3.0"><meta name="theme" content="hexo-theme-yun"><title>Trojan-go Server | Sakura70s の Blog's</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/star-markdown-css@0.4.1/dist/yun/yun-markdown.min.css"><link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/prism-theme-vars/base.css"><script src="https://fastly.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>function initScrollReveal() {
+  [".post-card",".markdown-body img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+}
+document.addEventListener("DOMContentLoaded", initScrollReveal);
+document.addEventListener("pjax:success", initScrollReveal);
+</script><link rel="icon" type="image/png" href="/favicon.ico"><link rel="mask-icon" href="/favicon.ico" color="#0078E7"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fastly.jsdelivr.net/npm/" crossorigin><script id="yun-config">
+    window.Yun = {}
+    window.CONFIG = {"hostname":"blog.7oss.top","root":"/","title":"偷得浮生半日闲","version":"1.10.9","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"搜索...","empty":"找不到您查询的内容: ${query}","hits":"找到 ${hits} 条结果","hits_time":"找到 ${hits} 条结果（用时 ${time} 毫秒）"},"anonymous_image":"https://cdn.yunyoujun.cn/img/avatar/none.jpg","say":{"api":"https://el-bot-api.vercel.app/api/words/young"},"fireworks":{"colors":null},"vendors":{"host":"https://fastly.jsdelivr.net/npm/","darken":"https://fastly.jsdelivr.net/npm/darken@1.5.0"}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/hexo-theme-yun.js" type="module"></script><meta name="description" content="本工具目前已经弃用目前 GFW 已经可以精准识别 Trojan-go 的 TLS over TLS 的流量并针对其进行封禁推荐爬墙协议更换为 NaïveProxy 和 hysteria       安装 Trojan-go 之前请一定要拥有自己的域名，并申请好 SSL 证书一台境外，且可以在国内联通的服务器该域名需要指向该服务器    下载 Trojan-go前往项目的 github-rel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Trojan-go Server">
+<meta property="og:url" content="https://blog.7oss.top/2022/09/04/Trojan-go-Server/index.html">
+<meta property="og:site_name" content="Sakura70s の Blog&#39;s">
+<meta property="og:description" content="本工具目前已经弃用目前 GFW 已经可以精准识别 Trojan-go 的 TLS over TLS 的流量并针对其进行封禁推荐爬墙协议更换为 NaïveProxy 和 hysteria       安装 Trojan-go 之前请一定要拥有自己的域名，并申请好 SSL 证书一台境外，且可以在国内联通的服务器该域名需要指向该服务器    下载 Trojan-go前往项目的 github-rel">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-04T12:16:46.000Z">
+<meta property="article:modified_time" content="2022-11-14T13:33:00.000Z">
+<meta property="article:author" content="Sakura70s">
+<meta property="article:tag" content="Debian">
+<meta property="article:tag" content="Trojan">
+<meta property="article:tag" content="Trojan-go">
+<meta property="article:tag" content="Passwall">
+<meta property="article:tag" content="GFW">
+<meta property="article:tag" content="Nginx">
+<meta name="twitter:card" content="summary"><script>(function() {
+  if (CONFIG.mode !== 'auto') return
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const setting = localStorage.getItem('darken-mode') || 'auto'
+  if (setting === 'dark' || (prefersDark && setting !== 'light'))
+    document.documentElement.classList.toggle('dark', true)
+})()</script></head><body><script src="https://code.iconify.design/2/2.1.1/iconify.min.js"></script><script>// Define global variable
+IconifyProviders = {
+  // Empty prefix: overwrite default API provider configuration
+  '': {
+    // Use custom API first, use Iconify public API as backup
+    resources: [
+        'https://api.iconify.design',
+    ],
+    // Wait for 1 second before switching API hosts
+    rotate: 1000,
+  },
+};</script><script defer src="https://fastly.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js" type="module"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js" type="module"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="文章目录"><span class="icon iconify" data-icon="ri:list-ordered"></span></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="站点概览"><span class="icon iconify" data-icon="ri:passport-line"></span></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="Sakura70s"><img width="96" loading="lazy" src="/images/avatar.jpg" alt="Sakura70s"></a><div class="site-author-name"><a href="/about/">Sakura70s</a></div><span class="site-name">Sakura70s の Blog's</span><sub class="site-subtitle"></sub><div class="site-description"></div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="首页"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:home-4-line"></span></span></a><div class="site-state-item"><a href="/archives/" title="归档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:archive-line"></span></span><span class="site-state-item-count">6</span></a></div><div class="site-state-item"><a href="/categories/" title="分类"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:folder-2-line"></span></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/tags/" title="标签"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="site-state-item-count">17</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><span class="icon iconify" data-icon="ri:settings-line"></span></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/Sakura70s" title="Github" target="_blank" style="color:#181717"><span class="icon iconify" data-icon="ri:github-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:Sakura70s@outlook.com" title="E-Mail" target="_blank" style="color:#8E71C1"><span class="icon iconify" data-icon="ri:mail-line"></span></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/54346474" title="Bilibili" target="_blank" style="color:#FF8EB3"><span class="icon iconify" data-icon="ri:bilibili-line"></span></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的左边翅膀" style="color:dodgerblue"><span class="icon iconify" data-icon="ri:genderless-line"></span></a><a class="links-item hty-icon-button" href="/girls/" title="我的右边翅膀" style="color:hotpink"><span class="icon iconify" data-icon="ri:women-line"></span></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><span class="icon iconify" data-icon="ri:contrast-2-line"></span></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD-Trojan-go"><span class="toc-number">1.</span> <span class="toc-text">下载 Trojan-go</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Trojan-go-%E9%85%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">Trojan-go 配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%AA%E8%A3%85%E9%A1%B5%E9%9D%A2%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">伪装页面配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%AA%E8%A3%85%E9%A1%B5%E9%9D%A2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.1.</span> <span class="toc-text">伪装页面配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%90%AF-Nginx"><span class="toc-number">3.2.</span> <span class="toc-text">重启 Nginx</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Systemd-%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">Systemd 配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF"><span class="toc-number">4.1.</span> <span class="toc-text">设置开机自启</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E9%98%B2%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%EF%BC%8C%E5%8F%AF%E4%BB%A5%E8%80%83%E8%99%91%E8%AE%BE%E7%BD%AE%E6%AF%8F%E6%97%A5%E5%AE%9A%E6%97%B6%E9%87%8D%E5%90%AF"><span class="toc-number">5.</span> <span class="toc-text">预防内存溢出，可以考虑设置每日定时重启</span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article" style="--smc-primary:#0078E7;"><link itemprop="mainEntityOfPage" href="https://blog.7oss.top/2022/09/04/Trojan-go-Server/"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="Sakura70s"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="Sakura70s の Blog's"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Trojan-go Server</h1><div class="post-meta"><div class="post-time"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-line"></span></span> <time title="创建时间：2022-09-04 20:16:46" itemprop="dateCreated datePublished" datetime="2022-09-04T20:16:46+08:00">2022-09-04</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:calendar-2-line"></span></span> <time title="修改时间：2022-11-14 21:33:00" itemprop="dateModified" datetime="2022-11-14T21:33:00+08:00">2022-11-14</time></div><div class="post-classify"><span class="post-category"> <span class="post-meta-item-icon" style="margin-right:3px;"><span class="icon iconify" data-icon="ri:folder-line"></span></span><span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a class="category-item" href="/categories/Server/" style="--text-color:var(--hty-text-color)" itemprop="url" rel="index"><span itemprop="text">Server</span></a></span></span><span class="post-tag"><span class="post-meta-divider">-</span><a class="tag-item" href="/tags/Debian/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Debian</span></a><a class="tag-item" href="/tags/Trojan/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Trojan</span></a><a class="tag-item" href="/tags/Trojan-go/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Trojan-go</span></a><a class="tag-item" href="/tags/Passwall/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Passwall</span></a><a class="tag-item" href="/tags/GFW/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">GFW</span></a><a class="tag-item" href="/tags/Nginx/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><span class="icon iconify" data-icon="ri:price-tag-3-line"></span></span><span class="tag-name">Nginx</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body"><div class="danger">
+
+<blockquote>
+<p>本工具目前已经弃用<br>目前 GFW 已经可以精准识别 Trojan-go 的 TLS over TLS 的流量<br>并针对其进行封禁<br>推荐爬墙协议更换为 <code>NaïveProxy</code> 和 <code>hysteria</code></p>
+</blockquote>
+</div>
+
+<div class="warning">
+
+<blockquote>
+<p>安装 Trojan-go 之前请一定要拥有自己的域名，并申请好 SSL 证书<br>一台境外，且可以在国内联通的服务器<br>该域名需要指向该服务器</p>
+</blockquote>
+</div>
+
+<h2 id="下载-Trojan-go"><a href="#下载-Trojan-go" class="headerlink" title="下载 Trojan-go"></a>下载 Trojan-go</h2><p>前往项目的 <a target="_blank" rel="noopener" href="https://github.com/p4gefau1t/trojan-go/releases">github-releases</a> 页面下载最新版</p>
+<p>Debian 可以使用 wget 命令</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">wget</span> https://github.com/p4gefau1t/trojan-go/releases/download/v0.10.6/trojan-go-linux-amd64.zip<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>下载完以后运行 <code>unzip trojan-go-linux-amd64.zip</code> 进行解压</p>
+<h2 id="Trojan-go-配置"><a href="#Trojan-go-配置" class="headerlink" title="Trojan-go 配置"></a>Trojan-go 配置</h2><p>执行<code>vim server.json</code>新建一个配置文件, 并粘贴以下内容</p>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+    <span class="token property">"run_type"</span><span class="token operator">:</span> <span class="token string">"server"</span><span class="token punctuation">,</span>
+    <span class="token property">"local_addr"</span><span class="token operator">:</span> <span class="token string">"0.0.0.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"local_port"</span><span class="token operator">:</span> <span class="token number">443</span><span class="token punctuation">,</span>
+    <span class="token property">"remote_addr"</span><span class="token operator">:</span> <span class="token string">"127.0.0.1"</span><span class="token punctuation">,</span>
+    <span class="token property">"remote_port"</span><span class="token operator">:</span> <span class="token number">80</span><span class="token punctuation">,</span>
+    <span class="token property">"password"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"Your Password"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"ssl"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token property">"cert"</span><span class="token operator">:</span> <span class="token string">"/cert/fullchain.cer"</span><span class="token punctuation">,</span>
+        <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"/cert/private.key"</span><span class="token punctuation">,</span>
+        <span class="token property">"fallback_port"</span><span class="token operator">:</span> <span class="token number">84</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div class="info">
+
+<blockquote>
+<p>说明:<br>run_type: 运行模式<br>remote_addr: 伪装网页地址<br>remote_port: 伪装网页的端口<br>fallback_port: 遇到非 Https 的协议，将其代理到该端口处理<br>cert&amp;key: SSL 证书存放的位置</p>
+</blockquote>
+</div>
+
+<h2 id="伪装页面配置"><a href="#伪装页面配置" class="headerlink" title="伪装页面配置"></a>伪装页面配置</h2><p>可以从 GitHub 里找一个静态网站用以伪装，也可以用自己的网站用作伪装<br>实在不行使用 Nginx 的默认页面也是可以的</p>
+<h3 id="伪装页面配置文件"><a href="#伪装页面配置文件" class="headerlink" title="伪装页面配置文件"></a>伪装页面配置文件</h3><p>执行<code>sudo vim /etc/nginx/conf.d/fake_site.conf</code>新建配置文件，并粘贴以下内容</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">server <span class="token punctuation">&#123;</span>
+    listen <span class="token number">80</span><span class="token punctuation">;</span>
+    listen <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:80<span class="token punctuation">;</span>
+    listen <span class="token number">84</span> ssl<span class="token punctuation">;</span>
+    listen <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:84 ssl<span class="token punctuation">;</span>
+
+    <span class="token comment"># SSL 配置</span>
+    ssl_certificate /cert/fullchain.cer<span class="token punctuation">;</span>
+    ssl_certificate_key /cert/private.key<span class="token punctuation">;</span>
+    ssl_session_timeout 5m<span class="token punctuation">;</span>
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2<span class="token punctuation">;</span>
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:<span class="token operator">!</span>aNULL:<span class="token operator">!</span>MD5:<span class="token operator">!</span>RC4:<span class="token operator">!</span>DHE<span class="token punctuation">;</span>
+    ssl_prefer_server_ciphers on<span class="token punctuation">;</span>
+
+    <span class="token comment"># 伪装网站的路径</span>
+    root /var/www/html/fake<span class="token punctuation">;</span>
+
+    index index.php index.html index.htm index.nginx-debian.html<span class="token punctuation">;</span>
+
+    <span class="token comment"># 绑定到服务器的域名</span>
+    server_name your.domain<span class="token punctuation">;</span>
+ 
+    client_max_body_size 10m<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="重启-Nginx"><a href="#重启-Nginx" class="headerlink" title="重启 Nginx"></a>重启 Nginx</h3><p>伪装页面配置保存以后重启 Nginx</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">systemctl restart nginx<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h2 id="Systemd-配置"><a href="#Systemd-配置" class="headerlink" title="Systemd 配置"></a>Systemd 配置</h2><p>执行 <code>sudo vim /usr/lib/systemd/system/trojan-go.service</code>新建服务单元，并粘贴以下内容</p>
+<pre class="line-numbers language-conf" data-language="conf"><code class="language-conf">[Unit]
+Description&#x3D;trojan-go
+After&#x3D;network.target
+
+[Service]
+User&#x3D;root
+Group&#x3D;root
+Type&#x3D;simple
+PIDFile&#x3D;&#x2F;root&#x2F;trojan-go&#x2F;trojan-go.pid
+ExecStart&#x3D;&#x2F;root&#x2F;trojan-go&#x2F;trojan-go -config &quot;&#x2F;root&#x2F;trojan-go&#x2F;server.json&quot;
+ExecReload&#x3D;&#x2F;bin&#x2F;kill -HUP $MAINPID
+Restart&#x3D;on-failure
+RestartSec&#x3D;10
+RestartPreventExitStatus&#x3D;23
+
+[Install]
+WantedBy&#x3D;multi-user.target<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<div class="info">
+
+<blockquote>
+<p>根据自己的实际情况替换 PIDFile 和 ExecStart 的路径</p>
+</blockquote>
+</div>
+
+<h3 id="设置开机自启"><a href="#设置开机自启" class="headerlink" title="设置开机自启"></a>设置开机自启</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 先重新加载服务配置文件</span>
+<span class="token function">sudo</span> systemctl daemon-reload
+<span class="token comment"># 启动 Trojan-go</span>
+systemctl start trojan-go
+<span class="token comment"># 设置开机自启</span>
+systemctl <span class="token builtin class-name">enable</span> trojan-go
+<span class="token comment"># 查看运行状态</span>
+systemctl status trojan-go
+<span class="token comment"># 重启</span>
+systemctl restart trojan-go<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="预防内存溢出，可以考虑设置每日定时重启"><a href="#预防内存溢出，可以考虑设置每日定时重启" class="headerlink" title="预防内存溢出，可以考虑设置每日定时重启"></a>预防内存溢出，可以考虑设置每日定时重启</h2><p>执行<code>crontab -e</code>编写当前用户的定时任务，粘贴以下内容</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># m h dM M dWeek shell</span>
+<span class="token number">40</span> 04 * * * systemctl restart trojan-go<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>执行<code>crontab -l</code>查看定时任务</p>
+</div></section><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="打赏" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><span class="icon iconify" data-icon="ri:hand-coin-line"></span></span><div id="reward-comment">I'm so cute. Please give me money.</div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Sakura70s</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="https://blog.7oss.top/2022/09/04/Trojan-go-Server/" title="Trojan-go Server">https://blog.7oss.top/2022/09/04/Trojan-go-Server/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本博客所有文章除特别声明外，均默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><span class="icon iconify" data-icon="ri:creative-commons-line"></span><span class="icon iconify" data-icon="ri:creative-commons-by-line"></span><span class="icon iconify" data-icon="ri:creative-commons-nc-line"></span><span class="icon iconify" data-icon="ri:creative-commons-sa-line"></span></a> 许可协议。</li></ul></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/2022/09/19/%E8%BF%BD%E7%95%AA%E5%88%97%E8%A1%A8/" rel="prev" title="追番列表"><span class="icon iconify" data-icon="ri:arrow-left-s-line"></span><span class="post-nav-text">追番列表</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/2022/09/04/%E4%BD%BF%E7%94%A8-Acme-sh-%E8%8E%B7%E5%8F%96%E8%AF%81%E4%B9%A6/" rel="next" title="使用 Acme.sh 获取证书"><span class="post-nav-text">使用 Acme.sh 获取证书</span><span class="icon iconify" data-icon="ri:arrow-right-s-line"></span></a></div></div></div><div class="hty-card" id="comment"></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2022 </span><span class="with-love" id="animate"><span class="icon iconify" data-icon="ri:cloud-line"></span></span><span class="author"> Sakura70s</span></div><div class="powered"><span>由 <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> 驱动 v6.3.0</span><span class="footer-separator">|</span><span>主题 - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.10.9</span></div><div class="live-time"><span>本博客已萌萌哒地运行</span><span id="display_live_time"></span><span class="moe-text">ヾ(≧▽≦*)o</span><script>function blog_live_time() {
+  setTimeout(blog_live_time, 1000);
+  const start = new Date('2022-07-26T00:00:00');
+  const now = new Date();
+  const timeDiff = (now.getTime() - start.getTime());
+  const msPerMinute = 60 * 1000;
+  const msPerHour = 60 * msPerMinute;
+  const msPerDay = 24 * msPerHour;
+  const passDay = Math.floor(timeDiff / msPerDay);
+  const passHour = Math.floor((timeDiff % msPerDay) / 60 / 60 / 1000);
+  const passMinute = Math.floor((timeDiff % msPerHour) / 60 / 1000);
+  const passSecond = Math.floor((timeDiff % msPerMinute) / 1000);
+  display_live_time.innerHTML = ` ${passDay} 天 ${passHour} 小时 ${passMinute} 分 ${passSecond} 秒`;
+}
+blog_live_time();
+</script></div><div class="footer-custom-text">Special Thanks: <a href="https://github.com/" rel="noopener" target="_blank">Github</a> & <a href="https://www.cloudflare.com/" rel="noopener" target="_blank">CloudFlare</a></div></footer></div><a class="hty-icon-button" id="back-to-top" aria-label="back-to-top" href="#"><span class="icon iconify" data-icon="ri:arrow-up-s-line"></span><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a></body></html>
